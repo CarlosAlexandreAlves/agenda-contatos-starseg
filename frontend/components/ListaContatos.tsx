@@ -13,7 +13,7 @@ interface ListaContatosProps {
   contatos: Contato[];
   onDelete: (id: number) => void;
   deletandoId: number | null;
-  onEditar: (contato: Contato) => void;  // Nova prop para editar
+  onEditar: (contato: Contato) => void;
 }
 
 export default function ListaContatos({ contatos, onDelete, deletandoId, onEditar }: ListaContatosProps) {
@@ -22,7 +22,7 @@ export default function ListaContatos({ contatos, onDelete, deletandoId, onEdita
   }
 
   return (
-    <ul className="grid grid-cols-1 md:grid-cols-2 lg-grid-cols-3 gap-4">
+    <ul className="space-y-4 w-full">
       {contatos.map(contato => (
         <ContatoCard
           key={contato.id}

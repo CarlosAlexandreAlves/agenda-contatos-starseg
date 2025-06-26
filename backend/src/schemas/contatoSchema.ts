@@ -11,5 +11,5 @@ export const contatoSchema = z.object({
   rua: z.string().optional(),
   numero: z.string().optional(),
   complemento: z.string().optional(),
-  foto: z.string().url().nullable().optional()
+  foto: z.string().optional().nullable(),
 });

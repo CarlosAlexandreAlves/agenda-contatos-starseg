@@ -3,13 +3,47 @@ import multer from 'multer';
 import { PrismaClient } from '@prisma/client';
 import { contatoSchema } from './schemas/contatoSchema';
 import { z } from 'zod';
+import fs from 'fs';
 import path from 'path';
+import express from 'express';
 
-const router = Router();
+const router = express.Router();
 const prisma = new PrismaClient();
 const upload = multer({ dest: 'uploads/' });
 
-// ✅ AJUSTE 1: Converter campos opcionais undefined → null para evitar erro de tipagem do Prisma
+/**
+ * Função utilitária para deletar um arquivo de imagem.
+ */
+function deletarImagem(nomeArquivo: string) {
+  const caminho = path.join(__dirname, '..', '..', 'uploads', nomeArquivo);
+  if (fs.existsSync(caminho)) {
+    fs.unlinkSync(caminho);
+  }
+}
+
+/**
+ * DELETE de imagem individual (usado quando clica em "Remover Foto" no frontend)
+ */
+router.delete('/uploads/:nomeArquivo', async (req, res) => {
+  const nomeArquivo = req.params.nomeArquivo;
+  const caminho = path.join(__dirname, '..', '..', 'uploads', nomeArquivo);
+
+  try {
+    if (fs.existsSync(caminho)) {
+      fs.unlinkSync(caminho);
+      return res.status(200).json({ mensagem: 'Imagem removida com sucesso.' });
+    } else {
+      return res.status(404).json({ erro: 'Arquivo não encontrado.' });
+    }
+  } catch (erro) {
+    console.error('Erro ao remover imagem:', erro);
+    return res.status(500).json({ erro: 'Erro interno ao excluir a imagem.' });
+  }
+});
+
+/**
+ * Função auxiliar para limpar campos opcionais.
+ */
 function prepararContato(dados: any) {
   return {
     ...dados,
@@ -24,7 +58,9 @@ function prepararContato(dados: any) {
   };
 }
 
-// ✅ ROTA PARA CRIAR CONTATO
+/**
+ * POST /contatos – Cria novo contato
+ */
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const dadosValidados = contatoSchema.parse(req.body);
@@ -42,11 +78,29 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-// ✅ ROTA PARA EDITAR CONTATO
+/**
+ * PUT /contatos/:id – Atualiza contato e remove imagem antiga (se for o caso)
+ */
 router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const dadosValidados = contatoSchema.parse(req.body);
+
+    const contatoExistente = await prisma.contato.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!contatoExistente) {
+      return res.status(404).json({ erro: 'Contato não encontrado' });
+    }
+
+    // Deleta imagem antiga se foi substituída
+    if (
+      contatoExistente.foto &&
+      contatoExistente.foto !== dadosValidados.foto
+    ) {
+      deletarImagem(contatoExistente.foto);
+    }
 
     const contatoAtualizado = await prisma.contato.update({
       where: { id: Number(id) },
@@ -62,25 +116,45 @@ router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-// ✅ ROTA PARA LISTAR CONTATOS
+/**
+ * GET /contatos – Lista todos os contatos
+ */
 router.get('/', async (req: Request, res: Response) => {
   const contatos = await prisma.contato.findMany();
   res.json(contatos);
 });
 
-// ✅ ROTA PARA DELETAR CONTATO
+/**
+ * DELETE /contatos/:id – Deleta contato e a imagem associada (se existir)
+ */
 router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const contato = await prisma.contato.findUnique({
+      where: { id: Number(req.params.id) },
+    });
+
+    if (!contato) {
+      return res.status(404).json({ erro: 'Contato não encontrado' });
+    }
+
+    // Remove imagem se existir
+    if (contato.foto) {
+      deletarImagem(contato.foto);
+    }
+
     await prisma.contato.delete({
       where: { id: Number(req.params.id) },
     });
+
     res.status(204).end();
   } catch (error) {
     next(error);
   }
 });
 
-// ✅ ROTA SEPARADA PARA UPLOAD DE IMAGEM
+/**
+ * POST /contatos/upload – Upload de imagem (foto do contato)
+ */
 router.post('/upload', upload.single('foto'), (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ erro: 'Nenhuma imagem enviada' });

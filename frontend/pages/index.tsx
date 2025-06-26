@@ -41,38 +41,36 @@ export default function Home() {
     }
   }
 
- async function handleDelete(id: number) {
-  try {
-    setDeletandoId(id);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+  async function handleDelete(id: number) {
+    try {
+      setDeletandoId(id);
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-    const res = await fetch(`http://localhost:4000/contatos/${id}`, {
-      method: 'DELETE',
-    });
+      const res = await fetch(`http://localhost:4000/contatos/${id}`, {
+        method: 'DELETE',
+      });
 
-    if (!res.ok) {
-      let errorMsg = 'Erro ao excluir contato';
-      try {
-        const data = await res.json();
-        if (data?.erro) errorMsg = data.erro;
-      } catch (_) {
-        // erro ao parsear json, mantém mensagem padrão
+      if (!res.ok) {
+        let errorMsg = 'Erro ao excluir contato';
+        try {
+          const data = await res.json();
+          if (data?.erro) errorMsg = data.erro;
+        } catch (_) {
+        }
+        throw new Error(errorMsg);
       }
-      throw new Error(errorMsg);
-    }
 
-    // Remover contato da lista local
-    setContatos(prev => prev.filter(contato => contato.id !== id));
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      alert(err.message);
-    } else {
-      alert('Erro ao excluir contato');
+      setContatos(prev => prev.filter(contato => contato.id !== id));
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert('Erro ao excluir contato');
+      }
+    } finally {
+      setDeletandoId(null);
     }
-  } finally {
-    setDeletandoId(null);
   }
-}
 
 
   function handleEditar(contato: Contato) {
@@ -87,8 +85,8 @@ export default function Home() {
     <main className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-4">Agenda de Contatos</h1>
 
-      <div className="flex flex-col md:flex-row items-start gap-8">
-        <div className="w-full md:w-3/5 lg:w-2/3">
+      <div className="w-full flex flex-col lg:flex-row gap-8 px-2 sm:px-4">
+        <div className="flex-1">
           <ContatoForm
             onContatoCriado={carregarContatos}
             contatoParaEditar={contatoParaEditar}
@@ -96,8 +94,10 @@ export default function Home() {
           />
         </div>
 
-        <div className="w-full md:w-2/5 lg:w-1/3 mt-8 md:mt-0">
-          <h2 className="text-xl font-semibold mb-4">Lista de Contatos</h2>
+        <div className="flex-1">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-center lg:text-left">Lista de Contatos</h2>
+          </div>
 
           {loading && <p>Carregando Contatos...</p>}
           {error && <p className="text-red-600">{error}</p>}
