@@ -7,6 +7,7 @@ interface Contato {
   nome: string;
   telefone: string;
   email: string;
+  foto?: string;
   cep?: string;
   estado?: string;
   cidade?: string;
@@ -34,41 +35,45 @@ export default function Home() {
       const data = await res.json();
       setContatos(data);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Erro desconhecido');
-      }
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleDelete(id: number) {
-    try {
-      setDeletandoId(id);
-      await new Promise(resolve => setTimeout(resolve, 1500));
+ async function handleDelete(id: number) {
+  try {
+    setDeletandoId(id);
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
-      const res = await fetch(`http://localhost:4000/contatos/${id}`, {
-        method: 'DELETE',
-      });
+    const res = await fetch(`http://localhost:4000/contatos/${id}`, {
+      method: 'DELETE',
+    });
 
-      if (!res.ok) {
+    if (!res.ok) {
+      let errorMsg = 'Erro ao excluir contato';
+      try {
         const data = await res.json();
-        throw new Error(data.erro || 'Erro ao excluir contato');
+        if (data?.erro) errorMsg = data.erro;
+      } catch (_) {
+        // erro ao parsear json, mantém mensagem padrão
       }
-
-      setContatos(prev => prev.filter(contato => contato.id !== id));
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        alert(err.message);
-      } else {
-        alert('Erro ao excluir contato');
-      }
-    } finally {
-      setDeletandoId(null);
+      throw new Error(errorMsg);
     }
+
+    // Remover contato da lista local
+    setContatos(prev => prev.filter(contato => contato.id !== id));
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      alert(err.message);
+    } else {
+      alert('Erro ao excluir contato');
+    }
+  } finally {
+    setDeletandoId(null);
   }
+}
+
 
   function handleEditar(contato: Contato) {
     setContatoParaEditar(contato);
@@ -82,15 +87,16 @@ export default function Home() {
     <main className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-4">Agenda de Contatos</h1>
 
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-1/2">
+      <div className="flex flex-col md:flex-row items-start gap-8">
+        <div className="w-full md:w-3/5 lg:w-2/3">
           <ContatoForm
             onContatoCriado={carregarContatos}
             contatoParaEditar={contatoParaEditar}
             onCancelarEdicao={() => setContatoParaEditar(null)}
           />
         </div>
-        <div className="w-full md:w-1/2">
+
+        <div className="w-full md:w-2/5 lg:w-1/3 mt-8 md:mt-0">
           <h2 className="text-xl font-semibold mb-4">Lista de Contatos</h2>
 
           {loading && <p>Carregando Contatos...</p>}

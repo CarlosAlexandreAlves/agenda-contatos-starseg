@@ -18,7 +18,8 @@ model Contato {
   bairro      String
   rua         String
   numero      String
-  complemento String?   // opcional
+  complemento String?
+  foto        String?     
   createdAt   DateTime @default(now())
 }
 

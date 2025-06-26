@@ -1,21 +1,38 @@
-import express, { Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
+import multer from 'multer';
 import { PrismaClient } from '@prisma/client';
 import { contatoSchema } from './schemas/contatoSchema';
 import { z } from 'zod';
+import path from 'path';
 
-const router = express.Router();  // IMPORTANTE: usar express.Router()
+const router = Router();
 const prisma = new PrismaClient();
+const upload = multer({ dest: 'uploads/' });
 
+// ✅ AJUSTE 1: Converter campos opcionais undefined → null para evitar erro de tipagem do Prisma
+function prepararContato(dados: any) {
+  return {
+    ...dados,
+    complemento: dados.complemento ?? '',
+    cep: dados.cep ?? null,
+    estado: dados.estado ?? null,
+    cidade: dados.cidade ?? null,
+    bairro: dados.bairro ?? null,
+    rua: dados.rua ?? null,
+    numero: dados.numero ?? null,
+    foto: dados.foto ?? null,
+  };
+}
+
+// ✅ ROTA PARA CRIAR CONTATO
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const dadosValidados = contatoSchema.parse(req.body);
 
-    const dataParaCriar = {
-      ...dadosValidados,
-      complemento: dadosValidados.complemento ?? '',
-    };
+    const novoContato = await prisma.contato.create({
+      data: prepararContato(dadosValidados),
+    });
 
-    const novoContato = await prisma.contato.create({ data: dataParaCriar });
     res.status(201).json(novoContato);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -25,37 +42,15 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const contatos = await prisma.contato.findMany({ orderBy: { createdAt: 'desc' } });
-    res.json(contatos);
-  } catch (error) {
-    next(error);
-  }
-});
-
+// ✅ ROTA PARA EDITAR CONTATO
 router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const contatoId = Number(req.params.id);
-    if (isNaN(contatoId)) {
-      return res.status(400).json({ erro: 'ID inválido' });
-    }
-
-    // Verifica se contato existe
-    const contatoExistente = await prisma.contato.findUnique({ where: { id: contatoId } });
-    if (!contatoExistente) {
-      return res.status(404).json({ erro: 'Contato não encontrado' });
-    }
-
+    const { id } = req.params;
     const dadosValidados = contatoSchema.parse(req.body);
-    const dataParaAtualizar = {
-      ...dadosValidados,
-      complemento: dadosValidados.complemento ?? '',
-    };
 
     const contatoAtualizado = await prisma.contato.update({
-      where: { id: contatoId },
-      data: dataParaAtualizar,
+      where: { id: Number(id) },
+      data: prepararContato(dadosValidados),
     });
 
     res.json(contatoAtualizado);
@@ -67,23 +62,32 @@ router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+// ✅ ROTA PARA LISTAR CONTATOS
+router.get('/', async (req: Request, res: Response) => {
+  const contatos = await prisma.contato.findMany();
+  res.json(contatos);
+});
+
+// ✅ ROTA PARA DELETAR CONTATO
 router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const contatoId = Number(req.params.id);
-    if (isNaN(contatoId)) {
-      return res.status(400).json({ erro: 'ID inválido' });
-    }
-
-    const contatoExistente = await prisma.contato.findUnique({ where: { id: contatoId } });
-    if (!contatoExistente) {
-      return res.status(404).json({ erro: 'Contato não encontrado' });
-    }
-
-    await prisma.contato.delete({ where: { id: contatoId } });
-    res.status(204).send();
+    await prisma.contato.delete({
+      where: { id: Number(req.params.id) },
+    });
+    res.status(204).end();
   } catch (error) {
     next(error);
   }
+});
+
+// ✅ ROTA SEPARADA PARA UPLOAD DE IMAGEM
+router.post('/upload', upload.single('foto'), (req: Request, res: Response) => {
+  if (!req.file) {
+    return res.status(400).json({ erro: 'Nenhuma imagem enviada' });
+  }
+
+  const url = `http://localhost:4000/uploads/${req.file.filename}`;
+  res.status(201).json({ url });
 });
 
 export default router;
