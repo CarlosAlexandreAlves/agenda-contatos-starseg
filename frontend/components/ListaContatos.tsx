@@ -21,14 +21,14 @@ export default function ListaContatos({ contatos, onDelete, deletandoId, onEdita
   }
 
   return (
-    <ul className="space-y-4">
+    <ul className="grid grid-cols-1 md:grid-cols-2 lg-grid-cols-3 gap-4">
       {contatos.map(contato => (
         <ContatoCard
           key={contato.id}
           contato={contato}
           onDelete={onDelete}
           deletando={deletandoId === contato.id}
-          onEditar={onEditar}  // Passa a função para ContatoCard
+          onEditar={onEditar}
         />
       ))}
     </ul>

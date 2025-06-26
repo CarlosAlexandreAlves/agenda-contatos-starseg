@@ -10,22 +10,20 @@ interface ContatoCardProps {
   contato: Contato;
   onDelete: (id: number) => void;
   deletando: boolean;
-  onEditar: (contato: Contato) => void;  // Nova prop para editar
+  onEditar: (contato: Contato) => void; 
 }
 
 export default function ContatoCard({ contato, onDelete, deletando, onEditar }: ContatoCardProps) {
   return (
-    <li className="bg-white dark:bg-zinc-800 p-4 rounded shadow flex justify-between items-center">
-      <div>
-        <p className="font-semibold">{contato.nome}</p>
-        <p>{contato.telefone}</p>
-        <p>{contato.email}</p>
-      </div>
+    <li className="bg-white dark:bg-zinc-800 p-3 rounded-xl shadow hover:shadow-md transition-shadow">
+      <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">{contato.nome}</h3> 
+      <p className="text-sm zinc-700 dark:text-zinc-300 mt-1">📞{contato.telefone}</p>
+      <p className="text-sm zinc-700 dark:text-zinc-300">✉️{contato.email}</p>
 
-      <div className="flex gap-2">
+      <div className="mt-3 flex justify-end gap-2">
         <button
           onClick={() => onEditar(contato)}
-          className="bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1 rounded"
+          className="bg-yellow-400 hover:bg-yellow-500 text-black tex-sm px-3 py-1 rounded"
           type="button"
         >
           Editar
@@ -34,7 +32,7 @@ export default function ContatoCard({ contato, onDelete, deletando, onEditar }: 
         <button
           onClick={() => onDelete(contato.id)}
           disabled={deletando}
-          className={`bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded ${deletando ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1 rounded ${deletando ? 'opacity-50 cursor-not-allowed' : ''}`}
           type="button"
         >
           {deletando ? 'Excluindo...' : 'Excluir'}

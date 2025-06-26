@@ -82,25 +82,30 @@ export default function Home() {
     <main className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-4">Agenda de Contatos</h1>
 
-      <ContatoForm
-        onContatoCriado={carregarContatos}
-        contatoParaEditar={contatoParaEditar}
-        onCancelarEdicao={() => setContatoParaEditar(null)}
-      />
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="w-full md:w-1/2">
+          <ContatoForm
+            onContatoCriado={carregarContatos}
+            contatoParaEditar={contatoParaEditar}
+            onCancelarEdicao={() => setContatoParaEditar(null)}
+          />
+        </div>
+        <div className="w-full md:w-1/2">
+          <h2 className="text-xl font-semibold mb-4">Lista de Contatos</h2>
 
-      <h2 className="text-xl font-semibold mt-8 mb-4">Lista de Contatos</h2>
+          {loading && <p>Carregando Contatos...</p>}
+          {error && <p className="text-red-600">{error}</p>}
 
-      {loading && <p>Carregando contatos...</p>}
-      {error && <p className="text-red-600">{error}</p>}
-
-      {!loading && !error && (
-        <ListaContatos
-          contatos={contatos}
-          onDelete={handleDelete}
-          deletandoId={deletandoId}
-          onEditar={handleEditar} 
-        />
-      )}
+          {!loading && !error && (
+            <ListaContatos
+              contatos={contatos}
+              onDelete={handleDelete}
+              deletandoId={deletandoId}
+              onEditar={handleEditar}
+            />
+          )}
+        </div>
+      </div>
     </main>
   );
 }

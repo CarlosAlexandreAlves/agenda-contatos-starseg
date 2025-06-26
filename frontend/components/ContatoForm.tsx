@@ -47,7 +47,7 @@ export default function ContatoForm({
   const [mensagemSucesso, setMensagemSucesso] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Preenche o formulário quando receber contatoParaEditar
+
   useEffect(() => {
     if (contatoParaEditar) {
       setNome(contatoParaEditar.nome || '');
@@ -111,16 +111,21 @@ export default function ContatoForm({
     };
 
     try {
+      
+       await new Promise((resolve) => setTimeout(resolve, 1000));
+       
       let res;
-      if (contatoParaEditar && contatoParaEditar.id) {
-        // Editar contato
+      if (contatoParaEditar && contatoParaEditar.id) 
+        
+        {
         res = await fetch(`http://localhost:4000/contatos/${contatoParaEditar.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(contatoData),
         });
-      } else {
-        // Criar contato
+      } else 
+    
+      {
         res = await fetch('http://localhost:4000/contatos', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -186,11 +191,12 @@ export default function ContatoForm({
               onChange={(e) => setNome(e.target.value)}
               required
               className="w-full border p-2 rounded"
+              disabled={loading}
             />
           </div>
 
-          <div className="flex gap-4">
-            <div className="w-1/2">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="w-full md:w-1/2">
               <label className="block mb-1 font-semibold">Telefone</label>
               <input
                 type="text"
@@ -198,9 +204,10 @@ export default function ContatoForm({
                 onChange={(e) => setTelefone(e.target.value)}
                 required
                 className="w-full border p-2 rounded"
+                disabled={loading}
               />
             </div>
-            <div className="w-1/2">
+            <div className="w-full md:w-1/2">
               <label className="block mb-1 font-semibold">Email</label>
               <input
                 type="email"
@@ -208,6 +215,7 @@ export default function ContatoForm({
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full border p-2 rounded"
+                disabled={loading}
               />
             </div>
           </div>
@@ -216,8 +224,8 @@ export default function ContatoForm({
         <fieldset className="border border-gray-300 p-4 rounded mt-4">
           <legend className="text-lg font-semibold px-2">Endereço</legend>
 
-          <div className="flex gap-4 mb-4">
-            <div className="w-1/3">
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="w-full md:w-1/3">
               <label className="block mb-1 font-semibold">CEP</label>
               <input
                 type="text"
@@ -246,10 +254,11 @@ export default function ContatoForm({
                 }}
                 required
                 className="w-full border p-2 rounded"
+                disabled={loading}
               />
             </div>
 
-            <div className="w-1/3">
+            <div className="w-full md:w-1/3">
               <label className="block mb-1 font-semibold">Cidade</label>
               <input
                 type="text"
@@ -257,10 +266,11 @@ export default function ContatoForm({
                 onChange={(e) => setCidade(e.target.value)}
                 required
                 className="w-full border p-2 rounded"
+                disabled={loading}
               />
             </div>
 
-            <div className="w-1/3">
+            <div className="w-full md:w-1/3">
               <label className="block mb-1 font-semibold">Estado</label>
               <input
                 type="text"
@@ -268,12 +278,13 @@ export default function ContatoForm({
                 onChange={(e) => setEstado(e.target.value)}
                 required
                 className="w-full border p-2 rounded"
+                disabled={loading}
               />
             </div>
           </div>
 
-          <div className="flex gap-4 mb-4">
-            <div className="w-1/2">
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="w-full md:w-1/2">
               <label className="block mb-1 font-semibold">Rua</label>
               <input
                 type="text"
@@ -281,10 +292,11 @@ export default function ContatoForm({
                 onChange={(e) => setRua(e.target.value)}
                 required
                 className="w-full border p-2 rounded"
+                disabled={loading}
               />
             </div>
 
-            <div className="w-1/2">
+            <div className="w-full md:w-1/2">
               <label className="block mb-1 font-semibold">Bairro</label>
               <input
                 type="text"
@@ -292,12 +304,13 @@ export default function ContatoForm({
                 onChange={(e) => setBairro(e.target.value)}
                 required
                 className="w-full border p-2 rounded"
+                disabled={loading}
               />
             </div>
           </div>
 
-          <div className="flex gap-4">
-            <div className="w-1/3">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="w-full md:w-1/3">
               <label className="block mb-1 font-semibold">Número</label>
               <input
                 type="text"
@@ -305,16 +318,18 @@ export default function ContatoForm({
                 onChange={(e) => setNumero(e.target.value)}
                 required
                 className="w-full border p-2 rounded"
+                disabled={loading}
               />
             </div>
 
-            <div className="w-2/3">
+            <div className="w-full md:w-2/3">
               <label className="block mb-1 font-semibold">Complemento (opcional)</label>
               <input
                 type="text"
                 value={complemento}
                 onChange={(e) => setComplemento(e.target.value)}
                 className="w-full border p-2 rounded"
+                disabled={loading}
               />
             </div>
           </div>
