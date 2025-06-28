@@ -34,5 +34,6 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://backend:4000
 
+
 volumes:
   postgres_data:
