@@ -1,56 +1,59 @@
-interface Contato {
-  id: number;
-  nome: string;
-  telefone: string;
-  email: string;
-  foto?: string;
-  createdAt?: string;
-}
+import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { Contato } from '@/types';
 
 interface ContatoCardProps {
-  contato: Contato;
+  contato: Contato & { id: number }; // <-- Garantimos que o id é obrigatório aqui
   onDelete: (id: number) => void;
-  deletando: boolean;
   onEditar: (contato: Contato) => void;
+  deletandoId: boolean;
 }
 
-export default function ContatoCard({ contato, onDelete, deletando, onEditar }: ContatoCardProps) {
+export default function ContatoCard({
+  contato,
+  onDelete,
+  onEditar,
+  deletandoId,
+}: ContatoCardProps) {
+  const endereco = `${contato.rua || ''}, ${contato.numero || ''} - ${contato.bairro || ''}, ${contato.cidade || ''} - ${contato.estado || ''}`;
+
   return (
-    <li className="bg-white dark:bg-zinc-800 p-4 sm:p-6 rounded-xl shadow hover:shadow-md transition-shadow w-full border border-zinc-200 dark:border-zinc-700">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        {contato.foto && (
-          <img
-            src={`http://localhost:4000/uploads/${contato.foto}`}
-            alt={`Foto de ${contato.nome}`}
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-blue-500"
-          />
-        )}
-        <div>
-          <h3 className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-white">{contato.nome}</h3>
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">📞 {contato.telefone}</p>
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">✉️ {contato.email}</p>
-        </div>
+    <li className="bg-zinc-900 text-white rounded-2xl p-4 shadow-md flex gap-4 items-center w-full">
+      {contato.foto && (
+        <img
+          src={`http://localhost:4000/uploads/${contato.foto}`}
+          alt="Foto do contato"
+          className="w-16 h-16 rounded-full border-2 border-white object-cover shrink-0"
+          style={{ border: '2px solid white' }}
+        />
+      )}
+
+      <div className="flex-1 min-w-0">
+        <h3 className="text-base md:text-lg font-bold truncate">{contato.nome}</h3>
+
+        <p className="flex items-center gap-2 text-pink-400 text-sm truncate">
+          <FaPhone /> {contato.telefone}
+        </p>
+        <p className="flex items-center gap-2 text-zinc-300 text-sm truncate">
+          <FaEnvelope /> {contato.email}
+        </p>
+        <p className="flex items-center gap-2 text-zinc-300 text-sm truncate">
+          <FaMapMarkerAlt /> {endereco}
+        </p>
       </div>
 
-      {/* Botões ficam fora da linha de conteúdo principal */}
-      <div className="mt-4 flex justify-end gap-2 flex-wrap">
+      <div className="flex flex-col gap-2 ml-2">
         <button
           onClick={() => onEditar(contato)}
-          className="bg-yellow-400 hover:bg-yellow-500 text-black text-sm px-3 py-1 rounded"
-          type="button"
+          className="bg-yellow-400 text-black text-sm px-2 py-1 rounded hover:brightness-90"
         >
           Editar
         </button>
-
         <button
           onClick={() => onDelete(contato.id)}
-          disabled={deletando}
-          className={`bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1 rounded ${
-            deletando ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          type="button"
+          className="bg-red-600 text-white text-sm px-2 py-1 rounded hover:brightness-90"
+          disabled={deletandoId}
         >
-          {deletando ? 'Excluindo...' : 'Excluir'}
+          {deletandoId ? 'Removendo...' : 'Remover'}
         </button>
       </div>
     </li>

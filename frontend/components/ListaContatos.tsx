@@ -1,13 +1,5 @@
 import ContatoCard from './ContatoCard';
-
-interface Contato {
-  id: number;
-  nome: string;
-  telefone: string;
-  email: string;
-  foto?: string;
-  createdAt?: string;
-}
+import { Contato } from '@/types';
 
 interface ListaContatosProps {
   contatos: Contato[];
@@ -16,19 +8,28 @@ interface ListaContatosProps {
   onEditar: (contato: Contato) => void;
 }
 
-export default function ListaContatos({ contatos, onDelete, deletandoId, onEditar }: ListaContatosProps) {
+export default function ListaContatos({
+  contatos,
+  onDelete,
+  deletandoId,
+  onEditar,
+}: ListaContatosProps) {
   if (contatos.length === 0) {
-    return <p>Nenhum contato encontrado.</p>;
+    return (
+      <p className="text-center text-zinc-500 dark:text-zinc-400">
+        Nenhum contato encontrado.
+      </p>
+    );
   }
 
   return (
-    <ul className="space-y-4 w-full">
-      {contatos.map(contato => (
+    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+      {contatos.map((contato) => (
         <ContatoCard
           key={contato.id}
           contato={contato}
           onDelete={onDelete}
-          deletando={deletandoId === contato.id}
+          deletandoId={deletandoId === contato.id}
           onEditar={onEditar}
         />
       ))}

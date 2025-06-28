@@ -1,117 +1,83 @@
 import { useEffect, useState } from 'react';
 import ContatoForm from '@/components/ContatoForm';
 import ListaContatos from '@/components/ListaContatos';
-
-interface Contato {
-  id: number;
-  nome: string;
-  telefone: string;
-  email: string;
-  foto?: string;
-  cep?: string;
-  estado?: string;
-  cidade?: string;
-  bairro?: string;
-  rua?: string;
-  numero?: string;
-  complemento?: string;
-  createdAt?: string;
-}
+import ConfirmarModal from '@/components/ConfirmarModal';
+import { Contato } from '@/types';
 
 export default function Home() {
   const [contatos, setContatos] = useState<Contato[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [deletandoId, setDeletandoId] = useState<number | null>(null);
-  const [contatoParaEditar, setContatoParaEditar] = useState<Contato | null>(null);
+  const [contatoEditando, setContatoEditando] = useState<Contato | null>(null);
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [idParaExcluir, setIdParaExcluir] = useState<number | null>(null);
 
-  async function carregarContatos() {
-    setLoading(true);
-    setError(null);
-
+  const carregarContatos = async () => {
     try {
       const res = await fetch('http://localhost:4000/contatos');
-      if (!res.ok) throw new Error('Erro ao buscar contatos');
       const data = await res.json();
       setContatos(data);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error('Erro ao buscar contatos:', err);
     }
-  }
+  };
 
-  async function handleDelete(id: number) {
+  const solicitarExclusao = (id: number) => {
+    setIdParaExcluir(id);
+    setMostrarModal(true);
+  };
+
+  const confirmarExclusao = async () => {
+    if (!idParaExcluir) return;
+    setDeletandoId(idParaExcluir);
+    setMostrarModal(false);
+
     try {
-      setDeletandoId(id);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const res = await fetch(`http://localhost:4000/contatos/${id}`, {
+      await fetch(`http://localhost:4000/contatos/${idParaExcluir}`, {
         method: 'DELETE',
       });
-
-      if (!res.ok) {
-        let errorMsg = 'Erro ao excluir contato';
-        try {
-          const data = await res.json();
-          if (data?.erro) errorMsg = data.erro;
-        } catch (_) {
-        }
-        throw new Error(errorMsg);
-      }
-
-      setContatos(prev => prev.filter(contato => contato.id !== id));
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        alert(err.message);
-      } else {
-        alert('Erro ao excluir contato');
-      }
+      carregarContatos();
+    } catch (err) {
+      console.error('Erro ao deletar contato:', err);
     } finally {
       setDeletandoId(null);
+      setIdParaExcluir(null);
     }
-  }
-
-
-  function handleEditar(contato: Contato) {
-    setContatoParaEditar(contato);
-  }
+  };
 
   useEffect(() => {
     carregarContatos();
   }, []);
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-gray-100 p-6">
-      <h1 className="text-2xl font-bold mb-4">Agenda de Contatos</h1>
+    <main className="min-h-screen bg-zinc-950 text-white p-4">
+      <h1 className="text-2xl font-bold mb-6 text-center">Agenda de Contatos</h1>
 
-      <div className="w-full flex flex-col lg:flex-row gap-8 px-2 sm:px-4">
-        <div className="flex-1">
+      <div className="flex flex-col lg:flex-row lg:gap-6 items-start justify-center w-full">
+        <div className="w-full max-w-md">
           <ContatoForm
-            onContatoCriado={carregarContatos}
-            contatoParaEditar={contatoParaEditar}
-            onCancelarEdicao={() => setContatoParaEditar(null)}
+            onSave={carregarContatos}
+            contatoAtual={contatoEditando ?? undefined}
+            setContatoAtual={(c) => setContatoEditando(c ?? null)}
           />
         </div>
 
-        <div className="flex-1">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-4 text-center lg:text-left">Lista de Contatos</h2>
-          </div>
-
-          {loading && <p>Carregando Contatos...</p>}
-          {error && <p className="text-red-600">{error}</p>}
-
-          {!loading && !error && (
-            <ListaContatos
-              contatos={contatos}
-              onDelete={handleDelete}
-              deletandoId={deletandoId}
-              onEditar={handleEditar}
-            />
-          )}
+        <div className="w-full max-w-3xl">
+          <h2 className="text-xl font-bold mb-4">Lista de Contatos</h2>
+          <ListaContatos
+            contatos={contatos}
+            onDelete={solicitarExclusao}
+            deletandoId={deletandoId}
+            onEditar={setContatoEditando}
+          />
         </div>
       </div>
+
+      <ConfirmarModal
+        visivel={mostrarModal}
+        mensagem="Deseja realmente excluir este contato?"
+        onCancelar={() => setMostrarModal(false)}
+        onConfirmar={confirmarExclusao}
+      />
     </main>
   );
 }

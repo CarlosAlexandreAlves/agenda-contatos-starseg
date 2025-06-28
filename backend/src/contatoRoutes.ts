@@ -11,9 +11,6 @@ const router = express.Router();
 const prisma = new PrismaClient();
 const upload = multer({ dest: 'uploads/' });
 
-/**
- * Função utilitária para deletar um arquivo de imagem.
- */
 function deletarImagem(nomeArquivo: string) {
   const caminho = path.join(__dirname, '..', '..', 'uploads', nomeArquivo);
   if (fs.existsSync(caminho)) {
@@ -21,9 +18,6 @@ function deletarImagem(nomeArquivo: string) {
   }
 }
 
-/**
- * DELETE de imagem individual (usado quando clica em "Remover Foto" no frontend)
- */
 router.delete('/uploads/:nomeArquivo', async (req, res) => {
   const nomeArquivo = req.params.nomeArquivo;
   const caminho = path.join(__dirname, '..', '..', 'uploads', nomeArquivo);
@@ -41,9 +35,7 @@ router.delete('/uploads/:nomeArquivo', async (req, res) => {
   }
 });
 
-/**
- * Função auxiliar para limpar campos opcionais.
- */
+
 function prepararContato(dados: any) {
   return {
     ...dados,
@@ -58,9 +50,7 @@ function prepararContato(dados: any) {
   };
 }
 
-/**
- * POST /contatos – Cria novo contato
- */
+
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const dadosValidados = contatoSchema.parse(req.body);
@@ -78,9 +68,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-/**
- * PUT /contatos/:id – Atualiza contato e remove imagem antiga (se for o caso)
- */
+
 router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
@@ -94,7 +82,7 @@ router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
       return res.status(404).json({ erro: 'Contato não encontrado' });
     }
 
-    // Deleta imagem antiga se foi substituída
+
     if (
       contatoExistente.foto &&
       contatoExistente.foto !== dadosValidados.foto
@@ -116,17 +104,13 @@ router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-/**
- * GET /contatos – Lista todos os contatos
- */
+
 router.get('/', async (req: Request, res: Response) => {
   const contatos = await prisma.contato.findMany();
   res.json(contatos);
 });
 
-/**
- * DELETE /contatos/:id – Deleta contato e a imagem associada (se existir)
- */
+
 router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const contato = await prisma.contato.findUnique({
@@ -137,7 +121,7 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
       return res.status(404).json({ erro: 'Contato não encontrado' });
     }
 
-    // Remove imagem se existir
+
     if (contato.foto) {
       deletarImagem(contato.foto);
     }
@@ -152,9 +136,7 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
   }
 });
 
-/**
- * POST /contatos/upload – Upload de imagem (foto do contato)
- */
+
 router.post('/upload', upload.single('foto'), (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ erro: 'Nenhuma imagem enviada' });

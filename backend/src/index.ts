@@ -2,6 +2,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import contatoRoutes from './contatoRoutes';
 import cors from 'cors';
 import path from 'path';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from '../swagger.json';
 
 const app = express();
 const PORT = 4000;
@@ -9,6 +11,7 @@ const PORT = 4000;
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/contatos', contatoRoutes);
 

@@ -1,0 +1,113 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API da Agenda de Contatos",
+    "version": "1.0.0",
+    "description": "Documentação da API criada no desafio Starseg"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Servidor local"
+    }
+  ],
+  "paths": {
+    "/contatos": {
+      "get": {
+        "summary": "Listar todos os contatos",
+        "responses": {
+          "200": {
+            "description": "Lista de contatos"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar um novo contato",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Contato"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contato criado com sucesso"
+          }
+        }
+      }
+    },
+    "/contatos/{id}": {
+      "put": {
+        "summary": "Atualizar um contato existente",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Contato"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contato atualizado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletar um contato",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Contato excluído"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Contato": {
+        "type": "object",
+        "properties": {
+          "nome": { "type": "string" },
+          "email": { "type": "string" },
+          "telefone": { "type": "string" },
+          "cep": { "type": "string" },
+          "estado": { "type": "string" },
+          "cidade": { "type": "string" },
+          "bairro": { "type": "string" },
+          "rua": { "type": "string" },
+          "numero": { "type": "string" },
+          "complemento": { "type": "string" },
+          "foto": { "type": "string" }
+        },
+        "required": ["nome", "email", "telefone"]
+      }
+    }
+  }
+}
