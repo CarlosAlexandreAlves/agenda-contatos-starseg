@@ -179,7 +179,6 @@ export default function ContatoForm({ onSave, contatoAtual, setContatoAtual }: C
 
         {preview && (
           <div className="flex items-center gap-2">
-            {/* ⚠️ Para avisos do ESLint, substitua <img> por <Image /> do next/image */}
             <img
               src={preview}
               alt="Preview"
