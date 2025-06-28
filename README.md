@@ -39,7 +39,7 @@ Aplicativo FullStack desenvolvido como parte do desafio prático para a vaga de 
 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/agenda-contatos-starseg.git
+git clone https://github.com/CarlosAlexandreAlves/agenda-contatos-starseg.git
 cd agenda-contatos-starseg
 ```
 
