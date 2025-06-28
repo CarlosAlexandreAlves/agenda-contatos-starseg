@@ -48,7 +48,7 @@ cd agenda-contatos-starseg
 Crie um banco chamado `agenda_contato` e defina a variável de ambiente no `.env`:
 
 ```env
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/agenda_contato"
+DATABASE_URL="postgres://postgres:postgres@postgres:5432/agenda_contatos"
 ```
 
 3. Instale as dependências
