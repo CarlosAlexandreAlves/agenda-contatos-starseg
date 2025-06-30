@@ -47,7 +47,7 @@ cd agenda-contatos-starseg
 
 DATABASE_URL="postgresql://usuario:senha@localhost:5432/agenda"
 
-## Lembre-se de substituir os campos!
+*Lembre-se de substituir os campos!*
 
 3. Configure o banco PostgreSQL
 
