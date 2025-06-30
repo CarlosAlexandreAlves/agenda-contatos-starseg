@@ -22,18 +22,15 @@ const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const prisma = new client_1.PrismaClient();
 const upload = (0, multer_1.default)({ dest: 'uploads/' });
-/**
- * Função utilitária para deletar um arquivo de imagem.
- */
+
+
 function deletarImagem(nomeArquivo) {
     const caminho = path_1.default.join(__dirname, '..', '..', 'uploads', nomeArquivo);
     if (fs_1.default.existsSync(caminho)) {
         fs_1.default.unlinkSync(caminho);
     }
 }
-/**
- * DELETE de imagem individual (usado quando clica em "Remover Foto" no frontend)
- */
+
 router.delete('/uploads/:nomeArquivo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const nomeArquivo = req.params.nomeArquivo;
     const caminho = path_1.default.join(__dirname, '..', '..', 'uploads', nomeArquivo);
@@ -51,16 +48,12 @@ router.delete('/uploads/:nomeArquivo', (req, res) => __awaiter(void 0, void 0, v
         return res.status(500).json({ erro: 'Erro interno ao excluir a imagem.' });
     }
 }));
-/**
- * Função auxiliar para limpar campos opcionais.
- */
+
 function prepararContato(dados) {
     var _a, _b, _c, _d, _e, _f, _g, _h;
     return Object.assign(Object.assign({}, dados), { complemento: (_a = dados.complemento) !== null && _a !== void 0 ? _a : '', cep: (_b = dados.cep) !== null && _b !== void 0 ? _b : null, estado: (_c = dados.estado) !== null && _c !== void 0 ? _c : null, cidade: (_d = dados.cidade) !== null && _d !== void 0 ? _d : null, bairro: (_e = dados.bairro) !== null && _e !== void 0 ? _e : null, rua: (_f = dados.rua) !== null && _f !== void 0 ? _f : null, numero: (_g = dados.numero) !== null && _g !== void 0 ? _g : null, foto: (_h = dados.foto) !== null && _h !== void 0 ? _h : null });
 }
-/**
- * POST /contatos – Cria novo contato
- */
+
 router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const dadosValidados = contatoSchema_1.contatoSchema.parse(req.body);
@@ -76,9 +69,7 @@ router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         next(error);
     }
 }));
-/**
- * PUT /contatos/:id – Atualiza contato e remove imagem antiga (se for o caso)
- */
+
 router.put('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
@@ -89,7 +80,7 @@ router.put('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         if (!contatoExistente) {
             return res.status(404).json({ erro: 'Contato não encontrado' });
         }
-        // Deleta imagem antiga se foi substituída
+
         if (contatoExistente.foto &&
             contatoExistente.foto !== dadosValidados.foto) {
             deletarImagem(contatoExistente.foto);
@@ -107,16 +98,12 @@ router.put('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         next(error);
     }
 }));
-/**
- * GET /contatos – Lista todos os contatos
- */
+
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contatos = yield prisma.contato.findMany();
     res.json(contatos);
 }));
-/**
- * DELETE /contatos/:id – Deleta contato e a imagem associada (se existir)
- */
+
 router.delete('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const contato = yield prisma.contato.findUnique({
@@ -125,7 +112,7 @@ router.delete('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, func
         if (!contato) {
             return res.status(404).json({ erro: 'Contato não encontrado' });
         }
-        // Remove imagem se existir
+
         if (contato.foto) {
             deletarImagem(contato.foto);
         }
@@ -138,9 +125,7 @@ router.delete('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, func
         next(error);
     }
 }));
-/**
- * POST /contatos/upload – Upload de imagem (foto do contato)
- */
+
 router.post('/upload', upload.single('foto'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ erro: 'Nenhuma imagem enviada' });

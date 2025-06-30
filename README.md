@@ -43,15 +43,17 @@ git clone https://github.com/CarlosAlexandreAlves/agenda-contatos-starseg.git
 cd agenda-contatos-starseg
 ```
 
-2. Configure o banco PostgreSQL
+3. Crie o arquivo .env na pasta backend/ com o conteúdo:
 
-Crie um banco chamado `agenda_contato` e defina a variável de ambiente no `.env`:
+4. Configure o banco PostgreSQL
+
+Crie um banco chamado `agenda` e defina a variável de ambiente no `.env`:
 
 ```env
-DATABASE_URL="postgres://postgres:postgres@postgres:5432/agenda_contatos"
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/agenda"
 ```
 
-3. Instale as dependências
+5. Instale as dependências
 
 ```bash
 cd backend
@@ -71,7 +73,7 @@ cd backend && npm run dev
 cd frontend && npm run dev
 ```
 
-Acesse em: [http://localhost:3000](http://localhost:3000)
+Acesse em: [http://localhost:3000]
 
 ---
 
@@ -80,17 +82,18 @@ Acesse em: [http://localhost:3000](http://localhost:3000)
 1. Configure variáveis no `.env` (backend):
 
 ```env
-DATABASE_URL=postgresql://postgres:postgres@db:5432/agenda_contato
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/agenda"
 ```
 
-2. Rode via Docker Compose (raiz do projeto):
+2. *Na raiz do projeto* Rode via Docker Compose:
 
 ```bash
 docker-compose up --build
 ```
 
-Frontend: [http://localhost:3000](http://localhost:3000)
-Backend: [http://localhost:4000](http://localhost:4000)
+Frontend: [http://localhost:3000]
+Backend: [http://localhost:4000]
+Swagger (documentação da API): [http://localhost:4000/docs]
 
 ---
 
@@ -112,6 +115,8 @@ Backend: [http://localhost:4000](http://localhost:4000)
 * [x] Clean Code: estrutura modular e organizada
 
 ## 📢 Contato
+
+Se você chegou até aqui, muito obrigado! Para dúvidas ou sugestões:
 
 Carlos Alves - [carlossalves101@gmail.com]
 
