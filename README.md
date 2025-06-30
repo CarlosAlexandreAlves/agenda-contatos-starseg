@@ -43,9 +43,9 @@ git clone https://github.com/CarlosAlexandreAlves/agenda-contatos-starseg.git
 cd agenda-contatos-starseg
 ```
 
-3. Crie o arquivo .env na pasta backend/ com o conteúdo:
+2. Crie o arquivo .env na pasta backend/ com o conteúdo:
 
-4. Configure o banco PostgreSQL
+3. Configure o banco PostgreSQL
 
 Crie um banco chamado `agenda` e defina a variável de ambiente no `.env`:
 
@@ -53,7 +53,7 @@ Crie um banco chamado `agenda` e defina a variável de ambiente no `.env`:
 DATABASE_URL="postgresql://usuario:senha@localhost:5432/agenda"
 ```
 
-5. Instale as dependências
+4. Instale as dependências
 
 ```bash
 cd backend
@@ -64,7 +64,7 @@ cd ../frontend
 npm install
 ```
 
-4. Rode o projeto
+5. Rode o projeto
 
 Em dois terminais:
 
