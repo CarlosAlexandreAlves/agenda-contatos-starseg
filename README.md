@@ -45,6 +45,10 @@ cd agenda-contatos-starseg
 
 2. Crie o arquivo .env na pasta backend/ com o conteúdo:
 
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/agenda"
+
+## Lembre-se de substituir os campos!
+
 3. Configure o banco PostgreSQL
 
 Crie um banco chamado `agenda` e defina a variável de ambiente no `.env`:
